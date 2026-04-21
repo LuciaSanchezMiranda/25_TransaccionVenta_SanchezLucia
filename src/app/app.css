@@ -1,0 +1,464 @@
+/* Fondo general */
+:host {
+  --color-primary: #1976d2;
+  --color-success: #4caf50;
+  --color-danger: #f44336;
+  --color-warning: #ff9800;
+  --color-info: #2196f3;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Títulos */
+h2 {
+  text-align: center;
+  margin: 0 0 30px 0;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+h2 i {
+  margin-right: 12px;
+  color: var(--color-primary);
+}
+
+h3 {
+  color: #555;
+  font-size: 16px;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+h3 i {
+  margin-right: 8px;
+  color: var(--color-primary);
+}
+
+/* Sección del formulario */
+.formulario {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid var(--color-primary);
+  margin-bottom: 30px;
+}
+
+/* Grid del formulario */
+.formulario > h3 {
+  grid-column: 1 / -1;
+}
+
+.formulario input {
+  grid-column: span 1;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.botones-formulario {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Inputs */
+.input-field {
+  padding: 12px 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(25, 118, 210, 0.2);
+  background: #f0f7ff;
+}
+
+/* Botones */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+button i {
+  font-size: 16px;
+}
+
+.btn-guardar {
+  background: var(--color-primary);
+  color: white;
+  flex: 1;
+}
+
+.btn-guardar:hover {
+  background: #1565c0;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.btn-guardar:active {
+  transform: scale(0.98);
+}
+
+.btn-cancelar {
+  background: #757575;
+  color: white;
+  flex: 0.8;
+}
+
+.btn-cancelar:hover {
+  background: #616161;
+}
+
+.btn-editar {
+  background: var(--color-warning);
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.btn-editar:hover {
+  background: #f57c00;
+}
+
+.btn-eliminar {
+  background: var(--color-danger);
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.btn-eliminar:hover {
+  background: #d32f2f;
+}
+
+/* Contenedor de tabla */
+.tabla-contenedor {
+  margin-top: 30px;
+}
+
+.tabla-contenedor h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Tabla */
+.tabla-series {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabla-series thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.tabla-series th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabla-series th i {
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.tabla-series td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.tabla-series tbody tr {
+  transition: all 0.2s ease;
+}
+
+.tabla-series tbody tr:hover {
+  background: #f5f5f5;
+}
+
+.tabla-series tbody tr.fila-editando {
+  background: #e3f2fd;
+  border-left: 3px solid var(--color-primary);
+}
+
+/* Celdas especiales */
+.centro {
+  text-align: center;
+}
+
+.acciones {
+  text-align: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Calificaciones con código de colores */
+.calificacion-alta {
+  background: #c8e6c9;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calificacion-alta i {
+  color: #ffc107;
+}
+
+.calificacion-media {
+  background: #fff9c4;
+  color: #f57f17;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calificacion-media i {
+  color: #ffc107;
+}
+
+.calificacion-baja {
+  background: #ffccbc;
+  color: #d84315;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calificacion-baja i {
+  color: #ffc107;
+}
+
+/* Mensaje vacío */
+.mensaje-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mensaje-vacio p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    margin: 15px;
+    padding: 20px;
+  }
+
+  .formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-series {
+    font-size: 12px;
+  }
+
+  .tabla-series th,
+  .tabla-series td {
+    padding: 10px 8px;
+  }
+
+  .acciones {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .botones-formulario {
+    flex-direction: column;
+  }
+
+  .btn-guardar,
+  .btn-cancelar {
+    flex: 1;
+  }
+}
+
+
+/* Botones generales */
+button {
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+
+button:hover {
+  opacity: 0.9;
+}
+
+
+/* Botón principal */
+button:not(.editar):not(.eliminar):not(.cancelar):not(.icon-btn) {
+  background: #1976d2;
+}
+
+
+/* Botón cancelar */
+.cancelar {
+  background: #757575;
+}
+
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+/* Encabezado */
+thead {
+  background: #1976d2;
+  color: white;
+}
+
+
+th, td {
+  padding: 12px;
+  text-align: center;
+}
+
+
+/* Filas */
+tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: 0.2s;
+}
+
+
+tbody tr:hover {
+  background: #f1f7ff;
+}
+
+
+/* Fila en edición */
+.editando {
+  background: #e3f2fd !important;
+}
+
+
+/* Mensaje vacío */
+.vacio {
+  text-align: center;
+  color: #888;
+  margin-top: 10px;
+}
+
+
+/* Celda de acciones */
+td.acciones {
+  display: table-cell; 
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+/* Contenedor interno */
+.acciones {
+   justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+
+/* Botones circulares */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+   align-items: center;
+  justify-content: center;
+  background: #ccc;
+  cursor: pointer;
+  transition: 0.2s;
+  color: white;
+  padding: 0;
+}
+
+
+/* Ícono */
+.icon-btn .material-icons {
+  font-size: 18px;
+}
+
+
+/* Hover animación */
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+
+/* Colores específicos */
+.editar {
+  background: #ffa000;
+}
+
+
+.eliminar {
+  background: #d32f2f;
+}
