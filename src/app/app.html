@@ -1,94 +1,30 @@
-<div class="container">
-  <h2><i class="fas fa-tv"></i> Gestión de Series</h2>
-  
-  <div class="formulario">
-    <h3><i class="fas fa-clapperboard"></i> {{ editando ? 'Editar Serie' : 'Agregar Nueva Serie' }}</h3>
-    
-    <input 
-      [(ngModel)]="nombre" 
-      placeholder="Nombre de la serie"
-      class="input-field">
-    
-    <input 
-      type="number" 
-      [(ngModel)]="temporadas" 
-      placeholder="Número de temporadas"
-      class="input-field">
-    
-    <input 
-      [(ngModel)]="genero" 
-      placeholder="Género"
-      class="input-field">
-    
-    <input 
-      type="number" 
-      [(ngModel)]="anoLanzamiento" 
-      placeholder="Año de lanzamiento"
-      class="input-field">
-    
-    <input 
-      type="number" 
-      [(ngModel)]="calificacion" 
-      step="0.1"
-      min="0"
-      max="10"
-      placeholder="Calificación (0-10)"
-      class="input-field">
-
-    <div class="botones-formulario">
-      <button (click)="guardar()" class="btn-guardar">
-        <i class="fas" [ngClass]="editando ? 'fa-save' : 'fa-plus'"></i>
-        {{ editando ? 'Guardar Cambios' : 'Agregar Serie' }}
-      </button>
-      <button 
-        *ngIf="editando" 
-        class="btn-cancelar" 
-        (click)="limpiar()">
-        <i class="fas fa-times"></i>
-        Cancelar
-      </button>
+<div class="app-shell">
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="brand-icon">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">TechVenta</span>
+        <span class="brand-sub">Venta de Artefactos Tecnológicos</span>
+      </div>
     </div>
-  </div>
 
-  <div class="tabla-contenedor" *ngIf="series.length > 0">
-    <h3><i class="fas fa-list"></i> Listado de Series ({{ series.length }})</h3>
-    <table class="tabla-series">
-      <thead>
-        <tr>
-          <th><i class="fas fa-pen"></i> Nombre</th>
-          <th><i class="fas fa-calendar"></i> Temporadas</th>
-          <th><i class="fas fa-theater-masks"></i> Género</th>
-          <th><i class="fas fa-calendar-alt"></i> Año</th>
-          <th><i class="fas fa-star"></i> Calificación</th>
-          <th><i class="fas fa-tools"></i> Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let serie of series" [ngClass]="{ 'fila-editando': editando && serieEditandoId === serie.id }">
-          <td>{{ serie.nombre }}</td>
-          <td class="centro">{{ serie.temporadas }}</td>
-          <td>{{ serie.genero }}</td>
-          <td class="centro">{{ serie.anoLanzamiento }}</td>
-          <td class="centro">
-            <span [ngClass]="{ 'calificacion-alta': serie.calificacion >= 8, 'calificacion-media': serie.calificacion < 8 && serie.calificacion >= 6, 'calificacion-baja': serie.calificacion < 6 }">
-              <i class="fas fa-star"></i> {{ serie.calificacion }}
-            </span>
-          </td>
-          <td class="acciones">
-            <button (click)="editar(serie)" class="btn-editar" title="Editar serie">
-              <i class="fas fa-edit"></i> Editar
-            </button>
-            <button (click)="eliminar(serie.id)" class="btn-eliminar" title="Eliminar serie">
-              <i class="fas fa-trash-alt"></i> Eliminar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="navbar-links">
+      <a routerLink="/ventas/listado" routerLinkActive="active" class="nav-link">
+        <i class="fas fa-list-alt"></i>
+        <span>Ventas</span>
+      </a>
+      <a routerLink="/ventas/nueva" routerLinkActive="active" class="nav-link nav-link-cta">
+        <i class="fas fa-plus"></i>
+        <span>Nueva Venta</span>
+      </a>
+    </div>
+  </nav>
 
-  <div class="mensaje-vacio" *ngIf="series.length === 0">
-    <i class="fas fa-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
-    <p>No hay series registradas. ¡Agrega una nueva!</p>
-  </div>
+  <!-- CONTENT -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

@@ -1,0 +1,223 @@
+<!-- SUCCESS STATE -->
+<div class="success-overlay" *ngIf="ventaRegistrada">
+  <div class="success-card">
+    <div class="success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h2>¡Venta Registrada!</h2>
+    <p class="success-id">Venta #{{ ventaId }}</p>
+    <p class="success-total">Total: <strong>{{ ventaTotalGuardado | currency:'USD':'symbol':'1.2-2' }}</strong></p>
+    <p class="success-cliente">Cliente: <strong>{{ ventaClienteGuardado }}</strong></p>
+    <div class="success-actions">
+      <button class="btn btn-outline" (click)="nuevaVenta()">
+        <i class="fas fa-plus"></i> Nueva Venta
+      </button>
+      <button class="btn btn-primary" (click)="irAListado()">
+        <i class="fas fa-list"></i> Ver Listado
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="page-container" *ngIf="!ventaRegistrada">
+  <div class="page-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="irAListado()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div>
+        <h1 class="page-title">Nueva Venta</h1>
+        <p class="page-subtitle">Completa los datos para registrar la transacción</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Punto de Venta</span>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <!-- LEFT COLUMN -->
+    <div class="form-left">
+
+      <!-- CLIENTE -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-user"></i>
+          <h3>Información del Cliente</h3>
+        </div>
+        <div class="card-body">
+          <div class="field-group" [class.has-error]="errores['cliente']">
+            <label class="field-label">Cliente <span class="required">*</span></label>
+            <select class="field-select" [(ngModel)]="clienteSeleccionadoId" name="cliente">
+              <option [ngValue]="null" disabled>— Seleccionar cliente —</option>
+              <option *ngFor="let c of clientes" [ngValue]="c.id">
+                {{ c.nombre }} {{ c.apellido }}
+              </option>
+            </select>
+            <span class="error-msg" *ngIf="errores['cliente']">
+              <i class="fas fa-exclamation-circle"></i> {{ errores['cliente'] }}
+            </span>
+          </div>
+
+          <div class="cliente-info" *ngIf="clienteSeleccionado">
+            <div class="info-row">
+              <i class="fas fa-envelope"></i>
+              <span>{{ clienteSeleccionado.email }}</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-phone"></i>
+              <span>{{ clienteSeleccionado.telefono }}</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ clienteSeleccionado.direccion }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OBSERVACIONES -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-sticky-note"></i>
+          <h3>Observaciones</h3>
+        </div>
+        <div class="card-body">
+          <textarea
+            class="field-textarea"
+            [(ngModel)]="observaciones"
+            name="observaciones"
+            placeholder="Notas adicionales sobre la venta (opcional)..."
+            rows="3">
+          </textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="form-right">
+
+      <!-- PRODUCTOS -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-box"></i>
+          <h3>Productos</h3>
+          <button class="btn-add-item" (click)="agregarItem()">
+            <i class="fas fa-plus"></i> Agregar
+          </button>
+        </div>
+        <div class="card-body">
+
+          <div class="error-banner" *ngIf="errores['productos']">
+            <i class="fas fa-exclamation-triangle"></i> {{ errores['productos'] }}
+          </div>
+          <div class="error-banner" *ngIf="errores['stock']">
+            <i class="fas fa-exclamation-triangle"></i> {{ errores['stock'] }}
+          </div>
+
+          <!-- TABLE HEADER -->
+          <div class="productos-table-header">
+            <span class="col-producto">Producto</span>
+            <span class="col-precio">Precio</span>
+            <span class="col-cantidad">Cantidad</span>
+            <span class="col-subtotal">Subtotal</span>
+            <span class="col-accion"></span>
+          </div>
+
+          <!-- ITEMS -->
+          <div class="item-row" *ngFor="let item of items; let i = index" [class.item-error]="item.errorStock || errores['cantidad_' + i]">
+            <!-- Producto select -->
+            <div class="col-producto">
+              <select class="field-select-sm" (change)="onProductoChange(i, $any($event.target).value)" [ngModel]="item.producto?.id" name="producto_{{i}}">
+                <option value="" disabled [selected]="!item.producto">— Producto —</option>
+                <option
+                  *ngFor="let p of productos"
+                  [value]="p.id"
+                  [disabled]="productoYaSeleccionado(p.id, i) || p.stock === 0">
+                  {{ p.nombre }} ({{ p.stock }} disp.)
+                </option>
+              </select>
+              <span class="stock-badge" *ngIf="item.producto">
+                Stock: {{ item.producto.stock }}
+              </span>
+            </div>
+
+            <!-- Precio -->
+            <div class="col-precio">
+              <span class="price-tag" *ngIf="item.producto">
+                {{ item.precioUnitario | currency:'USD':'symbol':'1.2-2' }}
+              </span>
+              <span class="price-empty" *ngIf="!item.producto">—</span>
+            </div>
+
+            <!-- Cantidad -->
+            <div class="col-cantidad">
+              <input
+                type="number"
+                class="field-input-sm"
+                [(ngModel)]="item.cantidad"
+                (ngModelChange)="onCantidadChange(i)"
+                name="cantidad_{{i}}"
+                min="1"
+                [max]="item.producto?.stock || 999"
+                [disabled]="!item.producto">
+              <span class="error-inline" *ngIf="item.errorStock">
+                <i class="fas fa-exclamation-circle"></i> {{ item.errorStock }}
+              </span>
+              <span class="error-inline" *ngIf="errores['cantidad_' + i]">
+                <i class="fas fa-exclamation-circle"></i> {{ errores['cantidad_' + i] }}
+              </span>
+            </div>
+
+            <!-- Subtotal -->
+            <div class="col-subtotal">
+              <span class="subtotal-value" *ngIf="item.producto">
+                {{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}
+              </span>
+              <span class="price-empty" *ngIf="!item.producto">—</span>
+            </div>
+
+            <!-- Eliminar -->
+            <div class="col-accion">
+              <button class="btn-remove" (click)="eliminarItem(i)" [disabled]="items.length === 1" title="Eliminar fila">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- TOTALES -->
+          <div class="totales-section">
+            <div class="totales-row">
+              <span>Subtotal ({{ itemsValidos.length }} producto{{ itemsValidos.length !== 1 ? 's' : '' }})</span>
+              <span>{{ total | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="totales-row total-final">
+              <span><i class="fas fa-receipt"></i> TOTAL</span>
+              <span>{{ total | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="form-actions">
+        <button class="btn btn-outline" (click)="nuevaVenta()">
+          <i class="fas fa-undo"></i> Limpiar
+        </button>
+        <button class="btn btn-primary btn-lg" (click)="registrarVenta()" [disabled]="cargando">
+          <span *ngIf="!cargando">
+            <i class="fas fa-check"></i> Registrar Venta
+          </span>
+          <span *ngIf="cargando">
+            <i class="fas fa-spinner fa-spin"></i> Procesando...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

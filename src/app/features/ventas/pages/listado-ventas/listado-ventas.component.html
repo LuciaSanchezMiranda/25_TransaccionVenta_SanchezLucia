@@ -1,0 +1,246 @@
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" *ngIf="confirmandoEliminar !== null" (click)="cancelarEliminar()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon danger">
+      <i class="fas fa-trash-alt"></i>
+    </div>
+    <h3>¿Eliminar venta?</h3>
+    <p>Esta acción restaurará el stock de los productos y no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn btn-danger" (click)="eliminarVenta()">
+        <i class="fas fa-trash-alt"></i> Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" *ngIf="ventaDetalle" (click)="cerrarDetalle()">
+  <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="modal-badge">Venta #{{ ventaDetalle.id }}</span>
+        <span class="estado-badge" [ngClass]="'estado-' + ventaDetalle.estado">
+          {{ ventaDetalle.estado | titlecase }}
+        </span>
+      </div>
+      <button class="btn-close" (click)="cerrarDetalle()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-section">
+          <h4><i class="fas fa-user"></i> Cliente</h4>
+          <p class="detail-name">{{ ventaDetalle.cliente.nombre }} {{ ventaDetalle.cliente.apellido }}</p>
+          <p class="detail-sub"><i class="fas fa-envelope"></i> {{ ventaDetalle.cliente.email }}</p>
+          <p class="detail-sub"><i class="fas fa-phone"></i> {{ ventaDetalle.cliente.telefono }}</p>
+        </div>
+        <div class="detail-section">
+          <h4><i class="fas fa-calendar"></i> Fecha</h4>
+          <p class="detail-name">{{ ventaDetalle.fecha | date:'dd/MM/yyyy' }}</p>
+          <p class="detail-sub">{{ ventaDetalle.fecha | date:'HH:mm' }} hrs</p>
+        </div>
+      </div>
+
+      <h4 class="products-title"><i class="fas fa-box"></i> Productos</h4>
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th class="text-right">Precio Unit.</th>
+            <th class="text-center">Cant.</th>
+            <th class="text-right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of ventaDetalle.detalles">
+            <td class="product-name">{{ d.producto.nombre }}</td>
+            <td><span class="cat-badge">{{ d.producto.categoria }}</span></td>
+            <td class="text-right">{{ d.precioUnitario | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td class="text-center">{{ d.cantidad }}</td>
+            <td class="text-right subtotal-cell">{{ d.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="total-label">TOTAL</td>
+            <td class="total-value">{{ ventaDetalle.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="obs-section" *ngIf="ventaDetalle.observaciones">
+        <h4><i class="fas fa-sticky-note"></i> Observaciones</h4>
+        <p>{{ ventaDetalle.observaciones }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Ventas</h1>
+      <p class="page-subtitle">Gestión de transacciones registradas</p>
+    </div>
+    <button class="btn btn-primary" (click)="nuevaVenta()">
+      <i class="fas fa-plus"></i> Nueva Venta
+    </button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card stat-total">
+      <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ ventas.length }}</span>
+        <span class="stat-label">Total Ventas</span>
+      </div>
+    </div>
+    <div class="stat-card stat-ingresos">
+      <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ totalVentas | currency:'USD':'symbol':'1.0-0' }}</span>
+        <span class="stat-label">Ingresos Totales</span>
+      </div>
+    </div>
+    <div class="stat-card stat-completadas">
+      <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ ventasCompletadas }}</span>
+        <span class="stat-label">Completadas</span>
+      </div>
+    </div>
+    <div class="stat-card stat-pendientes">
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ ventasPendientes }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        (ngModelChange)="aplicarFiltros()"
+        placeholder="Buscar por cliente o N° venta..."
+        class="search-input">
+      <button class="clear-search" *ngIf="busqueda" (click)="busqueda=''; aplicarFiltros()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <select class="filter-select" [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()">
+      <option value="">Todos los estados</option>
+      <option value="completada">Completada</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="cancelada">Cancelada</option>
+    </select>
+
+    <button class="btn-clear-filters" *ngIf="busqueda || filtroEstado" (click)="limpiarFiltros()">
+      <i class="fas fa-filter-circle-xmark"></i> Limpiar
+    </button>
+
+    <span class="results-count">{{ filtradas.length }} resultado{{ filtradas.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="ventas-table" *ngIf="filtradas.length > 0">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="toggleSort('id')">
+            N° Venta <i class="fas" [ngClass]="getSortIcon('id')"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('cliente')">
+            Cliente <i class="fas" [ngClass]="getSortIcon('cliente')"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('fecha')">
+            Fecha <i class="fas" [ngClass]="getSortIcon('fecha')"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('productos')">
+            Productos <i class="fas" [ngClass]="getSortIcon('productos')"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('total')">
+            Total <i class="fas" [ngClass]="getSortIcon('total')"></i>
+          </th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let venta of filtradas" class="table-row">
+          <td>
+            <span class="venta-id">#{{ venta.id }}</span>
+          </td>
+          <td>
+            <div class="cliente-cell">
+              <div class="avatar">{{ venta.cliente.nombre[0] }}{{ venta.cliente.apellido[0] }}</div>
+              <div>
+                <p class="cliente-nombre">{{ venta.cliente.nombre }} {{ venta.cliente.apellido }}</p>
+                <p class="cliente-email">{{ venta.cliente.email }}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <p class="fecha-main">{{ venta.fecha | date:'dd/MM/yyyy' }}</p>
+          </td>
+          <td>
+            <span class="productos-count">
+              <i class="fas fa-box"></i> {{ venta.detalles.length }}
+            </span>
+          </td>
+          <td>
+            <span class="total-cell">{{ venta.total | currency:'USD':'symbol':'1.2-2' }}</span>
+          </td>
+          <td>
+            <span class="estado-badge" [ngClass]="'estado-' + venta.estado">
+              <i class="fas" [ngClass]="{
+                'fa-check-circle': venta.estado === 'completada',
+                'fa-clock': venta.estado === 'pendiente',
+                'fa-times-circle': venta.estado === 'cancelada'
+              }"></i>
+              {{ venta.estado | titlecase }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-action btn-view" (click)="verDetalle(venta)" title="Ver detalle">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn-action btn-delete" (click)="confirmarEliminar(venta.id)" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filtradas.length === 0">
+      <div class="empty-icon">
+        <i class="fas fa-receipt"></i>
+      </div>
+      <h3>No se encontraron ventas</h3>
+      <p *ngIf="busqueda || filtroEstado">Intenta ajustar los filtros de búsqueda.</p>
+      <p *ngIf="!busqueda && !filtroEstado">Aún no hay ventas registradas.</p>
+      <button class="btn btn-primary" (click)="nuevaVenta()" *ngIf="!busqueda && !filtroEstado">
+        <i class="fas fa-plus"></i> Registrar primera venta
+      </button>
+    </div>
+  </div>
+
+</div>
